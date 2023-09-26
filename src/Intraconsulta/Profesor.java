@@ -10,6 +10,9 @@ public class Profesor {
 		this.nombre = nombre;
 		this.apellido = apellido;
 	}
+	public Profesor() {
+		// TODO Auto-generated constructor stub
+	}
 	public Integer getId() {
 		return Id;
 	}

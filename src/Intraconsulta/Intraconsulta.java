@@ -1,6 +1,7 @@
 package Intraconsulta;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class Intraconsulta {
@@ -10,7 +11,14 @@ public class Intraconsulta {
 	List <Materia> Materias = new ArrayList<Materia>();
 	List <Examen> Examenes = new ArrayList<Examen>();
 	List <Aula> Aulas = new ArrayList <Aula>();
+	List <CicloLectivo> CiclosLectivos = new ArrayList <CicloLectivo>();
 	
+	
+	
+	public Intraconsulta() {
+		super();
+	}
+
 	public boolean agregarAlumno(Alumnos alumno) {
 		boolean alumnoInscripto=false;
 		if(!revisarSiUnAlumnoYaExiste(alumno)) {
@@ -18,6 +26,93 @@ public class Intraconsulta {
 			Alumnos.add(alumno);
 		}
 		return alumnoInscripto;
+	}
+	
+	public boolean revisarSiExisteLaComisionParaLaMismaMateria(Comision comision) {
+		boolean materiaYaOcupada=false;
+		for(Materia mat : Materias) {
+			if((comision.getMateria().getId()==mat.getId()) && (mat.getComision()!=null)){
+				materiaYaOcupada=true;
+				break;
+			}
+		}
+		return materiaYaOcupada;
+	}
+	
+	public boolean revisarSiElAlumnoYaEstaIncriptoEnOtraComisionElMismoDiaYTurno(Alumnos alumno, Comision comision) {
+		boolean alumnoYaInscripto=false;
+		if((revisarSiUnAlumnoYaExiste(alumno))&&(revisarSiUnaComisionYaExiste(comision))) {
+			for(Materia mat: alumno.getInscripcionesVigentes()) {
+				if((mat.getComision().getTurno()==comision.getTurno())||(mat.getComision().getDia()==comision.getDia())){
+					alumnoYaInscripto=true;
+					break;
+				}
+			}
+		}
+		return alumnoYaInscripto;
+	}
+	
+	public boolean chequearSiLaFechaDeUnaInscripcionEsValidaONo(Date fechaInscripcion, Comision comision) {
+		boolean inscripcionValida=false;
+		if(comision.getCicloLectivo().fechaEstaEnRangoDeInscripciones(fechaInscripcion)) {
+			inscripcionValida=true;
+		}
+		return inscripcionValida;
+	}
+	
+	public boolean inscribirAlumnoAComision(Alumnos alumno, Comision comision, Date fechaInscripcion) { //En el condicional invoco a metodos que chequeen que las condiciones para que un alumno sea inscripto a una comision se cumplan correctamente
+		boolean alumnoInscripto=false;
+		if((!revisarSiElAlumnoYaEstaIncriptoEnOtraComisionElMismoDiaYTurno(alumno,comision))&&(revisarSiUnAlumnoYaExiste(alumno))&&(chequearSiLaFechaDeUnaInscripcionEsValidaONo(fechaInscripcion, comision))&&(!saberSiUnAlumnoYaAproboUnaMateria(alumno,comision.getMateria()))&&(revisarSiUnaComisionYaExiste(comision))) {
+			comision.agregarAlumno(alumno);
+			alumno.inscribirAlumnoAMateria(comision.getMateria());
+			alumnoInscripto=true;
+		}
+		return alumnoInscripto;
+	}
+	
+	public boolean saberSiUnAlumnoYaAproboUnaMateria(Alumnos alumno,Materia materia) {
+		boolean materiaYaAprobada=false;
+		if((revisarSiUnAlumnoYaExiste(alumno))&&(revisarSiUnaMateriaYaExiste(materia))) {
+			for(Materia mat : alumno.getMateriasAprobadas()) {
+				if(mat.getId()==materia.getId()) {
+					materiaYaAprobada=true;
+					break;
+				}
+			}
+		}
+		return materiaYaAprobada;
+	}
+	
+	public boolean revisarSiExisteLaComisionParaElMismoTurno(Comision comision) {
+		boolean comisionYaExistente=false;
+		for(Comision com : Comisiones) {
+			if((com.getId()==comision.getId())&&(com.getTurno()==comision.getTurno())){
+				comisionYaExistente=true;
+				break;
+			}
+		}
+		return comisionYaExistente;
+	}
+	public boolean revisarSiExisteLaComisionParaElMismoCiclolectivo(Comision comision) {
+		boolean comisionYaExistente=false;
+		if(!revisarSiUnaComisionYaExiste(comision)) {
+			for(CicloLectivo cl : CiclosLectivos) {
+				if(comision.getCicloLectivo().getId()==cl.getId()) {
+					comisionYaExistente=true;
+				}
+			}
+		}
+		return comisionYaExistente;
+	}
+	
+	public boolean revisarSiYaExisteUnCicloLectivo(CicloLectivo cicloLectivo) {//Aca reviso que no se cree un ciclo lectivo con id repetido ni con fechas superpuestas
+		boolean cicloLectivoYaExistente=false;
+		for(CicloLectivo cl:CiclosLectivos) {
+			if((cicloLectivo.getId()==cl.getId())||(cicloLectivo.fechaEstaEnRango(cl.getFechaInicioCicloLectivo()))) {
+				cicloLectivoYaExistente=true;
+			}
+		}
+		return cicloLectivoYaExistente;
 	}
 	
 	public boolean registrarProfesor(Profesor profesor) {
@@ -29,17 +124,7 @@ public class Intraconsulta {
 		}
 		return profesorRegistrado;
 	}
-	
-	public boolean registrarComision(Comision comision) {
-		boolean comisionRegistrada=false;
-		
-		if(!revisarSiUnaComisionYaExiste(comision)) {
-			comisionRegistrada=true;
-			Comisiones.add(comision);
-		}
-		return comisionRegistrada;
-	}
-	
+
 	public boolean nuevaCorrelativa(Materia materia, Materia correlativa) {
 		boolean correlativaCreada=false;
 		
@@ -61,7 +146,7 @@ public class Intraconsulta {
 
 	public boolean agregarComision(Comision comision) {
 		boolean comisionAgregada=false;
-		if(!revisarSiUnaComisionYaExiste(comision)) {
+		if((!revisarSiUnaComisionYaExiste(comision))&&(!revisarSiExisteLaComisionParaLaMismaMateria(comision))&&(!revisarSiExisteLaComisionParaElMismoTurno(comision))&&(!revisarSiExisteLaComisionParaElMismoCiclolectivo(comision))) {
 			Comisiones.add(comision);
 			comisionAgregada=true;
 		}
@@ -99,6 +184,7 @@ public class Intraconsulta {
 		}	
 		return docenteAsignado;
 	}
+	
 	public boolean asignarAulaALaComision(Comision comision, Aula aula) {
 		boolean aulaAsignada=false;
 		if((revisarSiUnaAulaYaExiste(aula))&&(revisarSiUnaComisionYaExiste(comision))) {
@@ -109,6 +195,7 @@ public class Intraconsulta {
 		}
 		return aulaAsignada;
 	}
+	
 	public boolean saberSiUnAlumnoRindioAlgunRecuperatorio(Alumnos alumno) {
 		boolean rindio=false;
 		for(Examen exa : Examenes) {
@@ -119,6 +206,7 @@ public class Intraconsulta {
 		}
 		return rindio;
 	}
+	
 	public boolean saberSiUnAlumnoRindioElFinal(Alumnos alumno, Materia materia) {
 		boolean rindio=false;
 		for(Examen exa : Examenes) {
@@ -136,7 +224,7 @@ public class Intraconsulta {
 		return promedio;
 	}
 	
-	public double obtenerPromedioDeUnAlumnoPorMateriaConRecuperatorios(Alumnos alumno, Materia materia) {
+	public double obtenerPromedioDeUnAlumnoPorMateriaConRecuperatorios(Alumnos alumno, Materia materia) {//Realiza el calculo del promedio de un alumno que haya rendido un recuperatorio
 		double promedio=0.0;
 		if(obtenerNotaPrimerParcial(alumno,materia)<4) {
 			promedio=((obtenerNotaPrimerRecuperatorio(alumno,materia)+obtenerNotaSegundoParcial(alumno,materia))/2);
@@ -159,19 +247,15 @@ public class Intraconsulta {
 		return nota;
 	}
 	
-	public boolean chequearCorrelativasAprobadas(Alumnos alumno, Materia materia) {
-		boolean correlativasAprobadas=false;
-		return correlativasAprobadas;
-		
-	}
-	public boolean aprobarMateria(Alumnos alumno, Materia materia) {
+	public boolean aprobarMateria(Alumnos alumno, Materia materia) { //Aca corrobora que todas las condiciones se cumplan antes de dar por aprobada una materia
 		boolean materiaAprobada=false;
-		if(obtenerNotaDeFinal(alumno,materia)>=4) {
+		if((obtenerNotaDeFinal(alumno,materia)>=7)&&(analizarSiLasCorrelativasEstanAprobadas(alumno,materia))) {
 			materiaAprobada=true;
 			alumno.agregarMateriaAprobada(materia);
 		}
 		return materiaAprobada;
 	}
+	
 	public Integer obtenerNotaDeFinal(Alumnos alumno, Materia materia) {
 		Integer nota=null;
 		if(saberSiUnAlumnoRindioElFinal(alumno,materia)) {
@@ -217,14 +301,33 @@ public class Intraconsulta {
 	
 	public Integer obtenerNotaSegundoRecuperatorio(Alumnos alumno, Materia materia) {
 		Integer nota=0;
-		for(Examen exa:Examenes) {
+		for(Examen exa:Examenes)	 {
 			if(((exa.getAlumno().getId()==alumno.getId())&&(exa.getMateria().getId()==materia.getId())&&(exa.getTipoExamen()==TipoExamen.RecuSegundoParcial))) {
 				nota=exa.getNota();
 			}
 		}
 		return nota;
 	}
-	public boolean analizarSiAlumnoCalificaParaExamenFinal(Alumnos alumno, Materia materia) {
+	
+	public boolean analizarSiLasCorrelativasEstanAprobadas(Alumnos alumno, Materia materia) { //Aca controlo si todas las materias que aparecen como correlativas de la materia a analizar aparecen en la lista de materias aprobadas del alumno, caso contrario faltan correlativas
+		boolean correlativasAprobadas=false;
+		List<Materia> controlador = new ArrayList<Materia>();
+		for(Materia corr : materia.getCorrelativa()) {
+			for(Materia mat: alumno.getMateriasAprobadas()) {
+				if((corr.getId()==mat.getId())&&(obtenerNotaDeFinal(alumno,mat)>=7)) {
+					controlador.add(mat);	
+					break;
+				}
+			}
+		
+		}
+		if(materia.getCorrelativa().size()==controlador.size()) {
+			correlativasAprobadas=true;
+		}
+		return correlativasAprobadas;
+	}
+	
+	public boolean analizarSiAlumnoCalificaParaExamenFinal(Alumnos alumno, Materia materia) { //Analiza que todas las condiciones se cumplan para que el alumno rinda un final
 		boolean califica=false;
 		if(obtenerNotaPrimerParcial(alumno,materia)>3) {
 			if(obtenerNotaSegundoParcial(alumno,materia)>3) {
@@ -240,7 +343,7 @@ public class Intraconsulta {
 		return califica;
 	}
 	
-	public boolean analizarSiElAlumnoYaRindioAlgunRecuperatorio(Alumnos alumno, Materia materia) {
+	public boolean analizarSiElAlumnoYaRindioAlgunRecuperatorio(Alumnos alumno, Materia materia) { //Controlo que el alumno solo rinda un recuperatorio
 		boolean yaHaRendido=false;
 		for(Examen exa:Examenes) {
 			if((exa.getMateria().getId()==materia.getId())&&(exa.getAlumno().getId()==alumno.getId())&&((exa.getTipoExamen()==TipoExamen.RecuPrimerParcial)||(exa.getTipoExamen()==TipoExamen.RecuSegundoParcial))) {
@@ -250,7 +353,8 @@ public class Intraconsulta {
 		}
 		return yaHaRendido;
 	}
-	public boolean analizarSiElAlumnoYaRindioEseParcial(Alumnos alumno, Materia materia, Examen examen) {
+	
+	public boolean analizarSiElAlumnoYaRindioEseParcial(Alumnos alumno, Materia materia, Examen examen) { //Se asegura que no se registre un parcial repetido para el mismo alumno en la misma materia
 		boolean yaHaRendido=false;
 		for(Examen exa:Examenes) {
 			if((exa.getMateria().getId()==materia.getId())&&(exa.getAlumno().getId()==alumno.getId())&&(exa.getTipoExamen()==examen.getTipoExamen())){
@@ -260,22 +364,27 @@ public class Intraconsulta {
 		}
 		return yaHaRendido;
 	}
-	public void registrarExamen(Examen examen, Alumnos alumno, Materia materia) {
-		try {
-			if((!revisarSiUnExamenYaExiste(examen))&&(!revisarSiUnAlumnoYaExiste(alumno))&&(!revisarSiUnaMateriaYaExiste(materia))&&(analizarNotaDeExamen(examen))) {
+	
+	public boolean registrarExamen(Examen examen, Alumnos alumno, Materia materia) { //Evalua las condiciones del examen que se quiere registrar y se llama a los metodos indicados para cada caso
+		boolean examenRegistrado=false;
+			if((alumno.chequearMateriasEnCurso(materia))&&(!revisarSiUnExamenYaExiste(examen))&&(!revisarSiUnAlumnoYaExiste(alumno))&&(!revisarSiUnaMateriaYaExiste(materia))&&(analizarNotaDeExamen(examen))) {
 				if(((examen.tipoExamen==TipoExamen.RecuPrimerParcial)&&(!analizarSiElAlumnoYaRindioAlgunRecuperatorio(alumno,materia))&&((obtenerNotaPrimerParcial(alumno,materia)<8)&&(obtenerNotaPrimerParcial(alumno,materia)>0)))||((examen.tipoExamen==TipoExamen.RecuSegundoParcial)&&((obtenerNotaSegundoParcial(alumno,materia)<8)&&(obtenerNotaSegundoParcial(alumno,materia)>0)))) {
 					materia.registrarExamen(examen);
+					examenRegistrado=true;
 				} else if(((examen.tipoExamen==TipoExamen.PrimerParcial)||(examen.tipoExamen==TipoExamen.SegundoParcial))&&(!analizarSiElAlumnoYaRindioEseParcial(alumno,materia,examen))) {
 					materia.registrarExamen(examen);
+					examenRegistrado=true;
 				} else {
 					if(analizarSiAlumnoCalificaParaExamenFinal(alumno,materia)) {
 						materia.registrarExamen(examen);
+						if(examen.getNota()>=7) {
+							examenRegistrado=true;
+							aprobarMateria(alumno,materia);
+						}
 					}
 				}
 			}
-		} catch (Exception e) {
-			
-		}
+		return examenRegistrado;
 	}
 	
 	public boolean revisarSiUnDocenteyaPerteneceAUnaComision(Profesor profesor, Comision comision) {
@@ -312,6 +421,17 @@ public class Intraconsulta {
 	}
 	
 	public boolean revisarSiUnaMateriaYaExiste(Materia materia) {
+		boolean materiaYaExistente=false;
+		for(Materia mat:Materias) {
+			if(mat.getId()==materia.getId()) {
+				materiaYaExistente=true;
+				break;
+			}
+		}
+		return materiaYaExistente;
+	}
+	
+	public boolean revisarSiUnaMateriaYaExiste1(Materia materia) {
 		boolean materiaYaExistente=false;
 		for(Materia mat:Materias) {
 			if((mat.getId()==materia.getId())&&(materia.getComision().getTurno().equals(mat.getComision().getTurno()))) {
@@ -370,7 +490,7 @@ public class Intraconsulta {
 		return correlatividadYaExiste;
 	}
 	
-	public boolean analizarNotaDeExamen(Examen examen) {
+	public boolean analizarNotaDeExamen(Examen examen) { //Se asegura que la nota que se intenta poner en un examen sea valida
 		boolean notasCorrectas=false;
 		if((examen.getNota()<11)&&(examen.getNota()>0)) {
 			notasCorrectas=true;
@@ -384,5 +504,38 @@ public class Intraconsulta {
 		} catch (Exception e) {
 			return null;
 		}
+	}
+	
+	public double obtenerPromedioTotalDelAlumno(Alumnos alumno) { //Realizo la sumatoria de las notas de los finales del alumno(Aprobados o desaprobados) y realizo el promedio
+		double promedio=0.0;
+		if((revisarSiUnAlumnoYaExiste(alumno))&(alumno.getMateriasAprobadas().size()>0)) { //En este condicional chequeo que el alumno exista y que al menos tenga una materia aprobada
+			for(Materia mat:alumno.getMateriasAprobadas()) {
+				if(saberSiUnAlumnoRindioElFinal(alumno,mat)) {
+					promedio=(promedio+(obtenerNotaDeFinal(alumno,mat)));
+				}
+			}
+			promedio=(promedio/alumno.getMateriasAprobadas().size());
+		}
+		return promedio;
+	}
+	
+	public List<Materia> obtenerMateriasQueFaltanCursarParaUnAlumno(Alumnos alumno){
+		boolean materiaEncontrada=false;
+		List<Materia> materiasRestantes = new ArrayList<Materia>();
+		if(revisarSiUnAlumnoYaExiste(alumno)) {
+			for(Materia mat:Materias) {
+				for(Materia aprobadas:alumno.getMateriasAprobadas()) {
+					if(mat.getId()==aprobadas.getId()) {
+						materiaEncontrada=true; //Si la materia se encuentra dentro de las materias que el alumno ya encontro, materiaEncontrada pasa a valer true, por lo que luego no la agrega a la lista de materias faltantes
+						break;
+					}
+				}
+				if(!materiaEncontrada) {
+					materiasRestantes.add(mat);
+				}
+				materiaEncontrada=false;
+			}
+		}
+		return materiasRestantes;
 	}
 }

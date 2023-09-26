@@ -9,6 +9,7 @@ public class Alumnos {
 	String nombre, apellido;
 	Date fechaNacimiento, fechaIngreso;
 	List <Materia> materiasAprobadas = new ArrayList<Materia>();
+	List <Materia> inscripcionesVigentes = new ArrayList<Materia>();
 	
 	public Alumnos(Integer id, String nombre, String apellido, Date fechaNacimiento, Date fechaIngreso) {
 		super();
@@ -18,6 +19,11 @@ public class Alumnos {
 		this.fechaNacimiento = fechaNacimiento;
 		this.fechaIngreso = fechaIngreso;
 	}
+	
+	public Alumnos() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public List<Materia> getMateriasAprobadas() {
 		return materiasAprobadas;
 	}
@@ -58,6 +64,27 @@ public class Alumnos {
 	}
 	public void agregarMateriaAprobada(Materia materia) {
 		materiasAprobadas.add(materia);
+		inscripcionesVigentes.remove(materia);
 	}
-	
+
+	public List<Materia> getInscripcionesVigentes() {
+		return inscripcionesVigentes;
+	}
+
+	public void setInscripcionesVigentes(List<Materia> inscripcionesVigentes) {
+		this.inscripcionesVigentes = inscripcionesVigentes;
+	}
+	public void inscribirAlumnoAMateria(Materia materia) {
+		inscripcionesVigentes.add(materia);
+	}
+	public boolean chequearMateriasEnCurso(Materia materia) {
+		boolean materiaEnCurso=false;
+		for(Materia mat : inscripcionesVigentes) {
+			if(mat.getId()==materia.getId()) {
+				materiaEnCurso=true;
+				break;
+			}
+		}
+		return materiaEnCurso;
+	}
 }

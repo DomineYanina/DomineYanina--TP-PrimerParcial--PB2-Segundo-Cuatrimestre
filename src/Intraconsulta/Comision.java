@@ -7,10 +7,14 @@ public class Comision {
 	Integer Id;
 	Materia materia;
 	List <Alumnos> Alumnos = new ArrayList<Alumnos>();
-	List<Profesor> Profesores = new ArrayList<Profesor>();
+	List <Profesor> Profesores = new ArrayList<Profesor>();
+	String dia;
 	CicloLectivo cicloLectivo;
 	Turno turno;
 	
+	public Comision () {
+		super();
+	}
 	public Comision(Integer id, Materia materia, CicloLectivo cicloLectivo, Turno turno) {
 		super();
 		Id = id;
@@ -19,6 +23,16 @@ public class Comision {
 		this.turno = turno;
 	}
 	
+	
+	public String getDia() {
+		return dia;
+	}
+
+
+	public void setDia(String dia) {
+		this.dia = dia;
+	}
+
 
 	public Integer getId() {
 		return Id;

@@ -1,11 +1,13 @@
 package Intraconsulta;
 
+import java.util.Date;
+
 public class CicloLectivo {
 	Integer Id;
-	String fechaInicioCicloLectivo, fechaFinCicloLectivo,fechaInicioInscripcion, fechaFinInscripcion;
+	Date fechaInicioCicloLectivo, fechaFinCicloLectivo,fechaInicioInscripcion, fechaFinInscripcion;
 	
-	public CicloLectivo(Integer id, String fechaInicioCicloLectivo, String fechaFinCicloLectivo,
-			String fechaInicioInscripcion, String fechaFinInscripcion) {
+	public CicloLectivo(Integer id, Date fechaInicioCicloLectivo, Date fechaFinCicloLectivo,
+			Date fechaInicioInscripcion, Date fechaFinInscripcion) {
 		super();
 		Id = id;
 		this.fechaInicioCicloLectivo = fechaInicioCicloLectivo;
@@ -14,34 +16,42 @@ public class CicloLectivo {
 		this.fechaFinInscripcion = fechaFinInscripcion;
 	}
 	
+	public boolean fechaEstaEnRango(Date fecha) {
+        return (fecha.after(fechaInicioCicloLectivo) || fecha.equals(fechaInicioCicloLectivo))
+                && (fecha.before(fechaFinCicloLectivo) || fecha.equals(fechaFinCicloLectivo));
+    }
+	public boolean fechaEstaEnRangoDeInscripciones(Date fecha) {
+        return (fecha.after(fechaInicioInscripcion) || fecha.equals(fechaInicioInscripcion))
+                && (fecha.before(fechaFinInscripcion) || fecha.equals(fechaFinInscripcion));
+    }
 	public Integer getId() {
 		return Id;
 	}
 	public void setId(Integer id) {
 		Id = id;
 	}
-	public String getFechaInicioCicloLectivo() {
+	public Date getFechaInicioCicloLectivo() {
 		return fechaInicioCicloLectivo;
 	}
-	public void setFechaInicioCicloLectivo(String fechaInicioCicloLectivo) {
+	public void setFechaInicioCicloLectivo(Date fechaInicioCicloLectivo) {
 		this.fechaInicioCicloLectivo = fechaInicioCicloLectivo;
 	}
-	public String getFechaFinCicloLectivo() {
+	public Date getFechaFinCicloLectivo() {
 		return fechaFinCicloLectivo;
 	}
-	public void setFechaFinCicloLectivo(String fechaFinCicloLectivo) {
+	public void setFechaFinCicloLectivo(Date fechaFinCicloLectivo) {
 		this.fechaFinCicloLectivo = fechaFinCicloLectivo;
 	}
-	public String getFechaInicioInscripcion() {
+	public Date getFechaInicioInscripcion() {
 		return fechaInicioInscripcion;
 	}
-	public void setFechaInicioInscripcion(String fechaInicioInscripcion) {
+	public void setFechaInicioInscripcion(Date fechaInicioInscripcion) {
 		this.fechaInicioInscripcion = fechaInicioInscripcion;
 	}
-	public String getFechaFinInscripcion() {
+	public Date getFechaFinInscripcion() {
 		return fechaFinInscripcion;
 	}
-	public void setFechaFinInscripcion(String fechaFinInscripcion) {
+	public void setFechaFinInscripcion(Date fechaFinInscripcion) {
 		this.fechaFinInscripcion = fechaFinInscripcion;
 	}
 	
