@@ -18,7 +18,6 @@ public class Alumnos {
 		this.fechaNacimiento = fechaNacimiento;
 		this.fechaIngreso = fechaIngreso;
 	}
-	
 	public List<Materia> getMateriasAprobadas() {
 		return materiasAprobadas;
 	}
