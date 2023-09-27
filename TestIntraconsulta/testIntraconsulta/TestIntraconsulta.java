@@ -197,4 +197,14 @@ public class TestIntraconsulta {
 
         assertFalse(resultado);
     }
+	
+	@Test
+	public void queNoMePermitaRegistrarDosProfesoresConElMismoID() {
+		Profesor Esteban = new Profesor (1,"Esteban","Quito");
+		Profesor Aquiles = new Profesor (1,"Aquiles","Bailoyo");
+		Intraconsulta intraconsulta = new Intraconsulta();
+		intraconsulta.registrarProfesor(Esteban);
+		assertFalse(intraconsulta.registrarProfesor(Aquiles));
+		
+	}
 }
