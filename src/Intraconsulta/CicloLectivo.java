@@ -1,13 +1,14 @@
 package Intraconsulta;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class CicloLectivo {
 	Integer Id;
-	Date fechaInicioCicloLectivo, fechaFinCicloLectivo,fechaInicioInscripcion, fechaFinInscripcion;
+	LocalDate fechaInicioCicloLectivo, fechaFinCicloLectivo,fechaInicioInscripcion, fechaFinInscripcion;
 	
-	public CicloLectivo(Integer id, Date fechaInicioCicloLectivo, Date fechaFinCicloLectivo,
-			Date fechaInicioInscripcion, Date fechaFinInscripcion) {
+	public CicloLectivo(Integer id, LocalDate fechaInicioCicloLectivo, LocalDate fechaFinCicloLectivo,
+			LocalDate fechaInicioInscripcion, LocalDate fechaFinInscripcion) {
 		super();
 		Id = id;
 		this.fechaInicioCicloLectivo = fechaInicioCicloLectivo;
@@ -16,13 +17,13 @@ public class CicloLectivo {
 		this.fechaFinInscripcion = fechaFinInscripcion;
 	}
 	
-	public boolean fechaEstaEnRango(Date fecha) {
-        return (fecha.after(fechaInicioCicloLectivo) || fecha.equals(fechaInicioCicloLectivo))
-                && (fecha.before(fechaFinCicloLectivo) || fecha.equals(fechaFinCicloLectivo));
+	public boolean fechaEstaEnRango(LocalDate fecha) {
+        return (fecha.isAfter(fechaInicioCicloLectivo) || fecha.equals(fechaInicioCicloLectivo))
+                && (fecha.isBefore(fechaFinCicloLectivo) || fecha.equals(fechaFinCicloLectivo));
     }
-	public boolean fechaEstaEnRangoDeInscripciones(Date fecha) {
-        return (fecha.after(fechaInicioInscripcion) || fecha.equals(fechaInicioInscripcion))
-                && (fecha.before(fechaFinInscripcion) || fecha.equals(fechaFinInscripcion));
+	public boolean fechaEstaEnRangoDeInscripciones(LocalDate fecha) {
+        return (fecha.isAfter(fechaInicioInscripcion) || fecha.equals(fechaInicioInscripcion))
+                && (fecha.isBefore(fechaFinInscripcion) || fecha.equals(fechaFinInscripcion));
     }
 	public Integer getId() {
 		return Id;
@@ -30,28 +31,28 @@ public class CicloLectivo {
 	public void setId(Integer id) {
 		Id = id;
 	}
-	public Date getFechaInicioCicloLectivo() {
+	public LocalDate getFechaInicioCicloLectivo() {
 		return fechaInicioCicloLectivo;
 	}
-	public void setFechaInicioCicloLectivo(Date fechaInicioCicloLectivo) {
+	public void setFechaInicioCicloLectivo(LocalDate fechaInicioCicloLectivo) {
 		this.fechaInicioCicloLectivo = fechaInicioCicloLectivo;
 	}
-	public Date getFechaFinCicloLectivo() {
+	public LocalDate getFechaFinCicloLectivo() {
 		return fechaFinCicloLectivo;
 	}
-	public void setFechaFinCicloLectivo(Date fechaFinCicloLectivo) {
+	public void setFechaFinCicloLectivo(LocalDate fechaFinCicloLectivo) {
 		this.fechaFinCicloLectivo = fechaFinCicloLectivo;
 	}
-	public Date getFechaInicioInscripcion() {
+	public LocalDate getFechaInicioInscripcion() {
 		return fechaInicioInscripcion;
 	}
-	public void setFechaInicioInscripcion(Date fechaInicioInscripcion) {
+	public void setFechaInicioInscripcion(LocalDate fechaInicioInscripcion) {
 		this.fechaInicioInscripcion = fechaInicioInscripcion;
 	}
-	public Date getFechaFinInscripcion() {
+	public LocalDate getFechaFinInscripcion() {
 		return fechaFinInscripcion;
 	}
-	public void setFechaFinInscripcion(Date fechaFinInscripcion) {
+	public void setFechaFinInscripcion(LocalDate fechaFinInscripcion) {
 		this.fechaFinInscripcion = fechaFinInscripcion;
 	}
 	

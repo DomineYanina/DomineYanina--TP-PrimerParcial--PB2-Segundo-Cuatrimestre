@@ -2,11 +2,12 @@ package testIntraconsulta;
 
 import static org.junit.Assert.*;
 
+import java.time.LocalDate;
+
 import org.junit.Test;
 
 import Intraconsulta.Alumnos;
 import Intraconsulta.Aula;
-import Intraconsulta.CicloLectivo;
 import Intraconsulta.Comision;
 import Intraconsulta.Examen;
 import Intraconsulta.Intraconsulta;
@@ -29,6 +30,27 @@ public class TestIntraconsulta {
 		intraconsulta.agregarMateria(PB, comi1);
 		//Validacion
 		assertFalse(intraconsulta.agregarMateria(BDD,comi2));
+	}
+	
+	@Test
+	public void queAlLlenarseElAulaSeLleneLaComisionQueLaEstaUsando() {
+		//Datos de entrada
+		Intraconsulta intraconsulta = new Intraconsulta();
+		Comision comi1 = new Comision();
+		Comision comi2 = new Comision();
+		Alumnos Jaime = new Alumnos();
+		Alumnos Pepe = new Alumnos();
+		Materia materia = new Materia(1,"PB");
+		Aula aula = new Aula(1,1);
+		comi1.setMateria(materia);
+		comi1.getMateria().setAula(aula);
+		//Ejecucion
+		intraconsulta.agregarAlumno(Jaime);
+		intraconsulta.agregarAlumno(Pepe);
+		comi1.agregarAlumno(Pepe);
+		
+		//Validacion
+		assertTrue(intraconsulta.chequearSiUnaComisionYaEstaLlena(comi1));
 	}
 	
 	@Test
@@ -68,28 +90,15 @@ public class TestIntraconsulta {
 		//Validacion
 		assertFalse(intraconsulta.asignarDocentesAComision(Jaime, comi1));
 	}
-
-	//@Test
-	//public void queAlAprobarUnFinalElimineLaMateriaAprobadaDeLasMateriasEnLasQueElAlumnoSeEncuentraInscripto() {
-		//Datos de entrada
-		//Intraconsulta intraconsulta = new Intraconsulta();
-		//Alumnos Walter = new Alumnos();
-		//Materia PB = new Materia(1,"PB");
-		//Examen PP = new Examen(Walter,9,1,TipoExamen.PrimerParcial);
-		//Examen SP = new Examen(Walter,7,2,TipoExamen.SegundoParcial);
-		//Examen F = new Examen(Walter,8,3,TipoExamen.Final);
-		//Walter.getInscripcionesVigentes().add(PB);
-		//Ejecucion
-		//intraconsulta.registrarExamen(PP, Walter, PB);
-		//intraconsulta.registrarExamen(SP, Walter, PB);
-		//intraconsulta.registrarExamen(F, Walter, PB);
-		//Validacion
-		//assertTrue(intraconsulta.saberSiUnAlumnoYaAproboUnaMateria(Walter, PB));
-	//}
-	
 	@Test 
-	public void queNoMePermitaAgregarUnDocenteInexistenteAUnaComision() {
-		
+	public void queMeDevuelvaErrorAlIntentarRegistrarUnExamenSinHaberInscriptoAlAlumnoAUnaMateria() {
+		Alumnos alumno = new Alumnos();
+		Materia materia = new Materia(1,"PB");
+		Examen PP = new Examen(alumno,10,1,TipoExamen.PrimerParcial);
+		Examen SP = new Examen(alumno,8,2,TipoExamen.SegundoParcial);
+		Intraconsulta intraconsulta = new Intraconsulta();
+		boolean resultado = intraconsulta.registrarExamen(SP, alumno, materia);
+		assertFalse(resultado);
 	}
 	
 	@Test
@@ -142,51 +151,54 @@ public class TestIntraconsulta {
 	}
 	
 	@Test
-	public void queSiIntentoInscribirAlAlumnoAUnaMateriaInexistenteMeDeError() {
-		
-	}
-	
-	@Test 
-	public void queSiLasNotasDeLasMateriasAprobadasDeUnAlumnoSonSieteYNueveElPromedioSeaOcho() {
-		//Datos de entrada
-		Double notaEsperada=8.0;
-		Intraconsulta intraconsulta = new Intraconsulta();
+	public void queSiInscriboAUnAlumnoAUnaMateriaMeDevuelvaVerdaderoAlBuscarlaEnLaListaDeLasMateriasEnLasQueElAlumnoSeEncuentraInscripto() {
 		Alumnos Walter = new Alumnos();
-		Materia PB = new Materia(1, "PB");
-		Examen PP = new Examen (Walter, 7,1,TipoExamen.PrimerParcial);
-		Examen SP = new Examen (Walter,9,2,TipoExamen.SegundoParcial);
-		Walter.getInscripcionesVigentes().add(PB);
-		//Ejecucion
-		intraconsulta.agregarAlumno(Walter);
-		intraconsulta.registrarExamen(PP, Walter, PB);
-		intraconsulta.registrarExamen(SP, Walter, PB);
-		//Validacion
-		assertEquals(notaEsperada,intraconsulta.obtenerPromedioSinFinalDeUnAlumnoPorMateria(Walter, PB));
-	}
-	
-	@Test
-	public void queSiLaNotaDeUnFinalEsOchoMeLaDevuelvaCorrectamente() {
-
+		Materia PB = new Materia(1,"PB");
+		Walter.inscribirAlumnoAMateria(PB);
+		Intraconsulta intraconsulta = new Intraconsulta();
+		boolean resultado=intraconsulta.chequearSiUnAlumnoSeEncuentraInscriptoEnUnaMateria(Walter, PB);
+		assertTrue(resultado);
 	}
 	
 	@Test
 	public void queMePermitaAsignarUnAulaALaComisionSiLaComisionYElDocenteExisten() {
+		Comision comi1 = new Comision();
+		Materia materia = new Materia(1,"PB");
+		Profesor Pepito = new Profesor();
+		Aula aula = new Aula(1,1);
+		Intraconsulta intraconsulta = new Intraconsulta();
+		comi1.setMateria(materia);
+		materia.setProfesor(Pepito);;
+		materia.setAula(aula);
+		assertEquals(aula,intraconsulta.obtenerElAulaDeUnaComision(comi1));
+	}
+	
+	@Test
+	public void queAlInscribirDosAlumnosEnUnaMateriaConCincoLugaresDisponiblesAunHayaCupo() {
+		Comision comi1 = new Comision();
+		Alumnos Peter = new Alumnos();
+		Alumnos Wendy = new Alumnos();
+		Aula aula = new Aula(1,5);
+		Materia materia = new Materia(1,"PB");
+		materia.setAula(aula);
+		comi1.setMateria(materia);
+		Intraconsulta intraconsulta = new Intraconsulta();
+		comi1.agregarAlumno(Wendy);
+		comi1.agregarAlumno(Peter);
+		
+		assertFalse(intraconsulta.chequearSiUnaComisionYaEstaLlena(comi1));
 		
 	}
 	
 	@Test
-	public void queMePermitaIngresarDosProfesoresEnUnaComisionEnLaQueHayUnProfesorYTreintaAlumnos() {
-		
-	}
-	
-	@Test
-	public void queNoMePermitaInscribirUnAlumnoAUnaMateriaQueHayaAprobadoPreviamente() {
-		
-	}
-	
-	@Test
-	public void queMePermitaInscribirDosAlumnosEnUnaComisionConCincoLugaresDisponibles() {
-		
-	}
-	
+    public void queAlAprobarUnaMateriaLuegoSePuedaConfirmarCorrectamente() {
+        Intraconsulta intraconsulta = new Intraconsulta();
+        Alumnos alumno = new Alumnos();
+        Materia materia = new Materia(1,"PB");
+        alumno.agregarMateriaAprobada(materia);
+
+        boolean resultado = intraconsulta.saberSiUnAlumnoYaAproboUnaMateria(alumno, materia);
+
+        assertFalse(resultado);
+    }
 }

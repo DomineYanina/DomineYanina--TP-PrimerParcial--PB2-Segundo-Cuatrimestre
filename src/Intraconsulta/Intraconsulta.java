@@ -1,7 +1,7 @@
 package Intraconsulta;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class Intraconsulta {
@@ -13,12 +13,18 @@ public class Intraconsulta {
 	List <Aula> Aulas = new ArrayList <Aula>();
 	List <CicloLectivo> CiclosLectivos = new ArrayList <CicloLectivo>();
 	
-	
-	
 	public Intraconsulta() {
 		super();
 	}
 
+	public Integer averiguarCantidadDeAlumnosPorComision(Comision comision) {
+		Integer cantidad=0;
+		if(revisarSiUnaComisionYaExiste(comision)) {
+			cantidad=comision.getAlumnos().size();
+		}
+		return cantidad;
+	}
+	
 	public boolean agregarAlumno(Alumnos alumno) {
 		boolean alumnoInscripto=false;
 		if(!revisarSiUnAlumnoYaExiste(alumno)) {
@@ -52,15 +58,25 @@ public class Intraconsulta {
 		return alumnoYaInscripto;
 	}
 	
-	public boolean chequearSiLaFechaDeUnaInscripcionEsValidaONo(Date fechaInscripcion, Comision comision) {
+	public boolean chequearSiLaFechaDeUnaInscripcionEsValidaONo(LocalDate fechaInscripcion, Comision comision) {
 		boolean inscripcionValida=false;
 		if(comision.getCicloLectivo().fechaEstaEnRangoDeInscripciones(fechaInscripcion)) {
 			inscripcionValida=true;
 		}
 		return inscripcionValida;
 	}
+	public Aula obtenerElAulaDeUnaComision(Comision comision) {
+		return comision.getMateria().getAula();
+	}
+	public boolean chequearSiUnaComisionYaEstaLlena(Comision comision) {
+		boolean aulaLlena=false;
+		if(comision.getMateria().getAula().getCantidadDeAlumnos()==comision.getAlumnos().size()) {
+			aulaLlena=true;
+		}
+		return aulaLlena;
+	}
 	
-	public boolean inscribirAlumnoAComision(Alumnos alumno, Comision comision, Date fechaInscripcion) { //En el condicional invoco a metodos que chequeen que las condiciones para que un alumno sea inscripto a una comision se cumplan correctamente
+	public boolean inscribirAlumnoAComision(Alumnos alumno, Comision comision, LocalDate fechaInscripcion) { //En el condicional invoco a metodos que chequeen que las condiciones para que un alumno sea inscripto a una comision se cumplan correctamente
 		boolean alumnoInscripto=false;
 		if((!revisarSiElAlumnoYaEstaIncriptoEnOtraComisionElMismoDiaYTurno(alumno,comision))&&(revisarSiUnAlumnoYaExiste(alumno))&&(chequearSiLaFechaDeUnaInscripcionEsValidaONo(fechaInscripcion, comision))&&(!saberSiUnAlumnoYaAproboUnaMateria(alumno,comision.getMateria()))&&(revisarSiUnaComisionYaExiste(comision))) {
 			comision.agregarAlumno(alumno);
@@ -431,17 +447,6 @@ public class Intraconsulta {
 		return materiaYaExistente;
 	}
 	
-	public boolean revisarSiUnaMateriaYaExiste1(Materia materia) {
-		boolean materiaYaExistente=false;
-		for(Materia mat:Materias) {
-			if((mat.getId()==materia.getId())&&(materia.getComision().getTurno().equals(mat.getComision().getTurno()))) {
-				materiaYaExistente=true;
-				break;
-			}
-		}
-		return materiaYaExistente;
-	}
-	
 	public boolean revisarSiUnaAulaYaExiste(Aula aula) {
 		boolean aulaYaExiste=false;
 		for(Aula au : Aulas) {
@@ -517,6 +522,17 @@ public class Intraconsulta {
 			promedio=(promedio/alumno.getMateriasAprobadas().size());
 		}
 		return promedio;
+	}
+	
+	public boolean chequearSiUnAlumnoSeEncuentraInscriptoEnUnaMateria(Alumnos alumno, Materia materia) {
+		boolean alumnoYaInscripto=false;
+		for(Materia mat : alumno.getInscripcionesVigentes()) {
+			if(mat.getId()==materia.getId()) {
+				alumnoYaInscripto=true;
+				break;
+			}
+		}
+		return alumnoYaInscripto;
 	}
 	
 	public List<Materia> obtenerMateriasQueFaltanCursarParaUnAlumno(Alumnos alumno){
