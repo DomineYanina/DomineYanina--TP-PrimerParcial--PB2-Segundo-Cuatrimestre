@@ -10,24 +10,31 @@ public class Profesor {
 		this.nombre = nombre;
 		this.apellido = apellido;
 	}
+	
 	public Profesor() {
 		// TODO Auto-generated constructor stub
 	}
+	
 	public Integer getId() {
 		return Id;
 	}
+	
 	public void setId(Integer id) {
 		Id = id;
 	}
+	
 	public String getNombre() {
 		return nombre;
 	}
+	
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
+	
 	public String getApellido() {
 		return apellido;
 	}
+	
 	public void setApellido(String apellido) {
 		this.apellido = apellido;
 	}

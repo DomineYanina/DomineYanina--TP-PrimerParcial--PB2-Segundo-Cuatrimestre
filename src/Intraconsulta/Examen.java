@@ -49,5 +49,4 @@ public class Examen {
 		this.materia = materia;
 	}
 	
-	
 }

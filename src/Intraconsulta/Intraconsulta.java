@@ -335,7 +335,6 @@ public class Intraconsulta {
 					break;
 				}
 			}
-		
 		}
 		if(materia.getCorrelativa().size()==controlador.size()) {
 			correlativasAprobadas=true;

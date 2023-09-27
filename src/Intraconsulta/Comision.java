@@ -15,9 +15,10 @@ public class Comision {
 	public Comision () {
 		super();
 	}
+	
 	public Comision(Integer id, Materia materia, CicloLectivo cicloLectivo, Turno turno) {
 		super();
-		Id = id;
+		this.Id = id;
 		this.materia = materia;
 		this.cicloLectivo = cicloLectivo;
 		this.turno = turno;
@@ -28,11 +29,9 @@ public class Comision {
 		return dia;
 	}
 
-
 	public void setDia(String dia) {
 		this.dia = dia;
 	}
-
 
 	public Integer getId() {
 		return Id;
@@ -89,6 +88,5 @@ public class Comision {
 	public void agregarAlumno(Alumnos alumno) {
 		Alumnos.add(alumno);	
 	}
-	
 	
 }
