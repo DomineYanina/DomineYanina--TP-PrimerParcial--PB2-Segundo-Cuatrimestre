@@ -2,8 +2,6 @@ package testIntraconsulta;
 
 import static org.junit.Assert.*;
 
-import java.time.LocalDate;
-
 import org.junit.Test;
 
 import Intraconsulta.Alumnos;
@@ -37,7 +35,6 @@ public class TestIntraconsulta {
 		//Datos de entrada
 		Intraconsulta intraconsulta = new Intraconsulta();
 		Comision comi1 = new Comision();
-		Comision comi2 = new Comision();
 		Alumnos Jaime = new Alumnos();
 		Alumnos Pepe = new Alumnos();
 		Materia materia = new Materia(1,"PB");
@@ -94,7 +91,6 @@ public class TestIntraconsulta {
 	public void queMeDevuelvaErrorAlIntentarRegistrarUnExamenSinHaberInscriptoAlAlumnoAUnaMateria() {
 		Alumnos alumno = new Alumnos();
 		Materia materia = new Materia(1,"PB");
-		Examen PP = new Examen(alumno,10,1,TipoExamen.PrimerParcial);
 		Examen SP = new Examen(alumno,8,2,TipoExamen.SegundoParcial);
 		Intraconsulta intraconsulta = new Intraconsulta();
 		boolean resultado = intraconsulta.registrarExamen(SP, alumno, materia);
@@ -136,18 +132,18 @@ public class TestIntraconsulta {
 	@Test
 	public void queNoMePermitaRendirUnRecuperatorioSiTengoAmbosParcialesDesaprobados() {
 		//Datos de entrada
-				Intraconsulta intraconsulta = new Intraconsulta();
-				Alumnos Walter = new Alumnos();
-				Materia PB = new Materia(1, "PB");
-				Examen PP = new Examen (Walter, 2,1,TipoExamen.PrimerParcial);
-				Examen SP = new Examen (Walter,1,2,TipoExamen.SegundoParcial);
-				Examen SR = new Examen (Walter,8,4,TipoExamen.RecuSegundoParcial);
-				Walter.getInscripcionesVigentes().add(PB);
-				//Ejecucion
-				intraconsulta.registrarExamen(PP, Walter, PB);
-				intraconsulta.registrarExamen(SP, Walter, PB);
-				//Validacion
-				assertFalse(intraconsulta.registrarExamen(SR, Walter, PB));
+		Intraconsulta intraconsulta = new Intraconsulta();
+		Alumnos Walter = new Alumnos();
+		Materia PB = new Materia(1, "PB");
+		Examen PP = new Examen (Walter, 2,1,TipoExamen.PrimerParcial);
+		Examen SP = new Examen (Walter,1,2,TipoExamen.SegundoParcial);
+		Examen SR = new Examen (Walter,8,4,TipoExamen.RecuSegundoParcial);
+		Walter.getInscripcionesVigentes().add(PB);
+		//Ejecucion
+		intraconsulta.registrarExamen(PP, Walter, PB);
+		intraconsulta.registrarExamen(SP, Walter, PB);
+		//Validacion
+		assertFalse(intraconsulta.registrarExamen(SR, Walter, PB));
 	}
 	
 	@Test
